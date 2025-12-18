@@ -71,8 +71,23 @@ public static class InMemoryCantonRepository
             canton.TotalPopulation = (uint)canton.Cities.Sum(x => x.Population);
 
             CantonCache[canton.Name] = canton;
-            
+
             return new CantonDto(canton.Name, canton.TotalPopulation, canton.Cities.ToList());
+        }
+    }
+
+    /// <summary>
+    /// Returns all cities across all cantons.
+    /// </summary>
+    /// <returns>A read-only collection of all cities with their population.</returns>
+    public static IReadOnlyCollection<City> GetCities()
+    {
+        lock (TransactionLock)
+        {
+            return CantonCache.Values
+                .SelectMany(canton => canton.Cities)
+                .Select(city => new City { Name = city.Name, Population = city.Population })
+                .ToList();
         }
     }
 }
