@@ -5,18 +5,28 @@ using Microsoft.AspNetCore.Mvc;
 namespace SwissCitiesApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class CantonsController
+[Route("[controller]")]
+public class CantonsController : ControllerBase
 {
+    /// <summary>
+    /// Lists all cantons and their population.
+    /// </summary>
+    /// <returns>All cantons with their total population.</returns>
+    [HttpGet]
+    public ActionResult<IEnumerable<CantonSummaryDto>> Get()
+    {
+        return Ok(InMemoryCantonRepository.GetCantons());
+    }
+
     /// <summary>
     /// Gets the canton and all it's cities.
     /// </summary>
     /// <param name="cantonName">The name of the canton.</param>
     /// <returns>A dto describing the canton.</returns>
-    [HttpGet]
-    public ActionResult<CantonDto> Get([FromQuery] string cantonName)
+    [HttpGet("{cantonName}")]
+    public ActionResult<CantonDto> Get([FromRoute] string cantonName)
     {
-        return InMemoryCantonRepository.Get(cantonName);
+        return Ok(InMemoryCantonRepository.Get(cantonName));
     }
 
     /// <summary>
@@ -27,6 +37,6 @@ public class CantonsController
     [HttpPut("[action]")]
     public ActionResult<CantonDto> UpdateCantonPopulation([FromBody] CantonDto updatedCanton)
     {
-        return InMemoryCantonRepository.UpdatePopulations(updatedCanton);
+        return Ok(InMemoryCantonRepository.UpdatePopulations(updatedCanton));
     }
 }

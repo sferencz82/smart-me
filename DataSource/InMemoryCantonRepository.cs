@@ -90,4 +90,18 @@ public static class InMemoryCantonRepository
                 .ToList();
         }
     }
+
+    /// <summary>
+    /// Returns all cantons with their total population.
+    /// </summary>
+    /// <returns>A read-only collection of all cantons.</returns>
+    public static IReadOnlyCollection<CantonSummaryDto> GetCantons()
+    {
+        lock (TransactionLock)
+        {
+            return CantonCache.Values
+                .Select(canton => new CantonSummaryDto(canton.Name, canton.TotalPopulation))
+                .ToList();
+        }
+    }
 }
